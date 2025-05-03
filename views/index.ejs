@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Felsefi Akım Önerileri</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }
+        h1, h2 {
+            color: #2c3e50;
+        }
+        form {
+            background: #f4f4f4;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        input, button {
+            padding: 10px;
+            margin: 5px 0;
+        }
+        input {
+            width: 200px;
+        }
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #2980b9;
+        }
+        .recommendation-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f9f9f9;
+            border-left: 4px solid #3498db;
+        }
+        .item {
+            margin: 15px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 3px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .error {
+            color: #e74c3c;
+            padding: 10px;
+            background: #fadbd8;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Felsefi Akım Öneri Sistemi</h1>
+    
+    <form action="/recommend" method="POST">
+        <label for="philosophy">Felsefi Akım (Realizm):</label><br>
+        <input type="text" id="philosophy" name="philosophy" required>
+        <button type="submit">Önerileri Göster</button>
+    </form>
+
+    <% if (philosophy) { %>
+        <% if (recommendations) { %>
+            <h2><%= philosophy %> için Öneriler</h2>
+            
+            <div class="recommendation-section">
+                <h3>Kitaplar</h3>
+                <% recommendations.books.forEach(book => { %>
+                    <div class="item">
+                        <strong><%= book.title %></strong> - <%= book.author %><br>
+                        <%= book.description %>
+                    </div>
+                <% }); %>
+            </div>
+            
+            <div class="recommendation-section">
+                <h3>Filmler</h3>
+                <% recommendations.movies.forEach(movie => { %>
+                    <div class="item">
+                        <strong><%= movie.title %></strong> (<%= movie.year %>) - <%= movie.director %><br>
+                        <%= movie.description %>
+                    </div>
+                <% }); %>
+            </div>
+            
+            <div class="recommendation-section">
+                <h3>Diziler</h3>
+                <% recommendations.series.forEach(series => { %>
+                    <div class="item">
+                        <strong><%= series.title %></strong> (<%= series.year %>) - <%= series.creator %><br>
+                        <%= series.description %>
+                    </div>
+                <% }); %>
+            </div>
+        <% } else { %>
+            <div class="error">
+                <%= error %>
+            </div>
+        <% } %>
+    <% } %>
+</body>
+</html>
