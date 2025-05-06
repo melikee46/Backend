@@ -1,58 +1,155 @@
+
 const express = require('express');
 const bodyParser = require('body-parser');
+const path = require('path');
+
 const app = express();
 
-// Middleware ayarları
+// Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'));
-app.set('view engine', 'ejs');
 
-// Sabit veriler (sadece realizm için)
+// EJS Ayarları
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+
+// 5 Felsefi Akım için Öneriler
 const recommendations = {
+    'nihilizm': {
+        books: [
+            { 
+                title: 'Ecce Homo', 
+                author: 'Friedrich Nietzsche', 
+                description: 'Nietzsche\'nin kendi felsefesini özetlediği otobiyografik eser',
+                
+            }
+        ],
+        movies: [
+            { 
+                title: 'Fight Club', 
+                year: 1999, 
+                director: 'David Fincher', 
+                description: 'Modern toplumun anlamsızlığına dair sert bir eleştiri',
+                
+            }
+        ]
+    },
+    'stoacılık': {
+        books: [
+            { 
+                title: 'Meditasyonlar', 
+                author: 'Marcus Aurelius', 
+                description: 'Roma İmparatoru\'nun stoacı felsefe notları',
+                
+            }
+        ],
+        movies: [
+            { 
+                title: 'Gladyatör', 
+                year: 2000, 
+                director: 'Ridley Scott', 
+                description: 'Stoacı erdemlerin sinemadaki en iyi temsillerinden',
+                
+            }
+        ]
+    },
+    'varoluşçuluk': {
+        books: [
+            { 
+                title: 'Bulantı', 
+                author: 'Jean-Paul Sartre', 
+                description: 'Varoluşun absürtlüğü üzerine temel eser',
+                
+            }
+        ],
+        movies: [
+            { 
+                title: 'Yeraltı', 
+                year: 1995, 
+                director: 'Emir Kusturica', 
+                description: 'Varoluşsal bunalımın epik anlatımı',
+            
+            }
+        ]
+    },
     'realizm': {
-        'books': [
-            { title: 'Madame Bovary', author: 'Gustave Flaubert', description: 'Gerçekçi edebiyatin başyapıtlarından biri olan bu roman, burjuva yaşamının yüzeyselliğini eleştirir.' },
-            { title: 'Savaş ve Barış', author: 'Lev Tolstoy', description: 'Tarihsel gerçekçiliğin en önemli örneklerinden biri, Napolyon dönemi Rusyasını anlatır.' },
-            { title: 'Kırmızı ve Siyah', author: 'Stendhal', description: 'Toplumsal yükseliş ve aşk üzerine gerçekçi bir roman.' }
+        books: [
+            { 
+                title: 'Madame Bovary', 
+                author: 'Gustave Flaubert', 
+                description: 'Gerçekçi edebiyatın başyapıtlarından',
+                
+            }
         ],
-        'movies': [
-            { title: 'Bicycle Thieves (Bisiklet Hırsızları)', year: 1948, director: 'Vittorio De Sica', description: 'İtalyan Yeni Gerçekçilik akımının en önemli filmlerinden biri.' },
-            { title: 'The Grapes of Wrath (Gazap Üzümleri)', year: 1940, director: 'John Ford', description: 'Büyük Buhran döneminde bir ailenin yaşadıklarını anlatır.' },
-            { title: 'Tokyo Story (Tokyo Hikayesi)', year: 1953, director: 'Yasujirō Ozu', description: 'Japon aile yapısındaki değişimi gerçekçi bir şekilde ele alır.' }
+        movies: [
+            { 
+                title: 'Bisiklet Hırsızları', 
+                year: 1948, 
+                director: 'Vittorio De Sica', 
+                description: 'İtalyan Yeni Gerçekçilik akımının şaheseri',
+                
+            }
+        ]
+        
+    },
+    'feminizm': {
+        books: [
+            { 
+                title: 'Kendi Odanız', 
+                author: 'Virginia Woolf', 
+                description: 'Kadın yazarların toplumsal konumuna dair manifesto',
+                
+            }
         ],
-        'series': [
-            { title: 'The Wire', year: '2002-2008', creator: 'David Simon', description: 'Baltimore\'daki uyuşturucu ticareti, liman işçileri, siyaset ve eğitim sistemini gerçekçi bir şekilde ele alır.' },
-            { title: 'Mad Men', year: '2007-2015', creator: 'Matthew Weiner', description: '1960\'ların reklam dünyasını ve toplumsal değişimleri anlatır.' },
-            { title: 'The Crown', year: '2016-', creator: 'Peter Morgan', description: 'Kraliçe II. Elizabeth\'in saltanatının tarihsel gerçeklere dayalı dramatizasyonu.' }
+        movies: [
+            { 
+                title: 'Kız Çocuğu', 
+                year: 2016, 
+                director: 'Maren Ade', 
+                description: 'Modern feminizmin sinemadaki en güçlü temsillerinden',
+                
+            }
         ]
     }
 };
 
 // Ana sayfa
 app.get('/', (req, res) => {
-    res.render('index', { recommendations: null, philosophy: '' });
+    res.render('index', { 
+        recommendations: null, 
+        philosophy: '', 
+        error: null,
+        allPhilosophies: Object.keys(recommendations) // Tüm akımları gönder
+    });
 });
 
 // Öneri isteği
 app.post('/recommend', (req, res) => {
-    const philosophy = req.body.philosophy.toLowerCase();
+    const input = req.body.philosophy.toLowerCase();
+    const philosophy = Object.keys(recommendations).find(key => 
+        key.toLowerCase() === input
+    );
     
-    if (philosophy === 'realizm' || philosophy === 'realizim') {
-        res.render('index', { 
-            recommendations: recommendations['realizm'], 
-            philosophy: 'Realizm' 
+    if (philosophy) {
+        res.render('index', {
+            recommendations: recommendations[philosophy],
+            philosophy: philosophy.charAt(0).toUpperCase() + philosophy.slice(1),
+            error: null,
+            allPhilosophies: Object.keys(recommendations)
         });
     } else {
-        res.render('index', { 
-            recommendations: null, 
-            philosophy: philosophy,
-            error: 'Üzgünüz, sadece "Realizm" için önerilerimiz bulunmaktadır.' 
+        res.render('index', {
+            recommendations: null,
+            philosophy: input,
+            error: 'Bu akım için öneri bulunamadı. Deneyebileceğiniz akımlar: ' + 
+                   Object.keys(recommendations).join(', '),
+            allPhilosophies: Object.keys(recommendations)
         });
     }
 });
 
-// Sunucuyu başlat
-const PORT = process.env.PORT || 3000;
+// Sunucu
+const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
-    console.log(`Sunucu ${PORT} portunda çalışıyor...`);
+    console.log(`Sunucu http://localhost:${PORT} adresinde çalışıyor`);
 });
