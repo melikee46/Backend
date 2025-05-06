@@ -3,109 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Felsefi Akım Önerileri</title>
+    <title>Felsefe Rehberi</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
+            background-color: #f5f5f5;
             color: #333;
         }
-        h1, h2 {
+        h1 {
             color: #2c3e50;
+            text-align: center;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
         }
         form {
-            background: #f4f4f4;
+            background: white;
             padding: 20px;
-            border-radius: 5px;
-            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
         }
-        input, button {
+        input[type="text"] {
+            width: 70%;
             padding: 10px;
-            margin: 5px 0;
-        }
-        input {
-            width: 200px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
         }
         button {
+            padding: 10px 20px;
             background: #3498db;
             color: white;
             border: none;
+            border-radius: 4px;
             cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
         }
         button:hover {
             background: #2980b9;
         }
+        .philosophy-list {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
         .recommendation-section {
-            margin: 20px 0;
-            padding: 15px;
-            background: #f9f9f9;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .recommendation-section h2 {
+            color: #2c3e50;
             border-left: 4px solid #3498db;
+            padding-left: 10px;
         }
         .item {
+            padding: 15px;
             margin: 15px 0;
-            padding: 10px;
-            background: white;
-            border-radius: 3px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            background: #f9f9f9;
+            border-radius: 5px;
+            border-left: 3px solid #3498db;
+        }
+        .item h3 {
+            margin-top: 0;
+            color: #2c3e50;
         }
         .error {
-            color: #e74c3c;
-            padding: 10px;
             background: #fadbd8;
-            border-radius: 3px;
+            color: #e74c3c;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
         }
     </style>
 </head>
 <body>
-    <h1>Felsefi Akım Öneri Sistemi</h1>
+    <h1>Felsefi Akım Rehberi</h1>
     
     <form action="/recommend" method="POST">
-        <label for="philosophy">Felsefi Akım (Realizm):</label><br>
-        <input type="text" id="philosophy" name="philosophy" required>
-        <button type="submit">Önerileri Göster</button>
+        <label for="philosophy"><strong>Akım Ara:</strong></label><br>
+        <input type="text" id="philosophy" name="philosophy" 
+               placeholder="Örneğin: <%= allPhilosophies.join(', ') %>" required>
+        <button type="submit">Önerileri Getir</button>
+        <div class="philosophy-list">
+            Desteklenen akımlar: <%= allPhilosophies.join(', ') %>
+        </div>
     </form>
 
     <% if (philosophy) { %>
         <% if (recommendations) { %>
-            <h2><%= philosophy %> için Öneriler</h2>
+            <h2 style="text-align: center;"><%= philosophy %> İçin Seçkiler</h2>
             
-            <div class="recommendation-section">
-                <h3>Kitaplar</h3>
-                <% recommendations.books.forEach(book => { %>
-                    <div class="item">
-                        <strong><%= book.title %></strong> - <%= book.author %><br>
-                        <%= book.description %>
-                    </div>
-                <% }); %>
-            </div>
-            
-            <div class="recommendation-section">
-                <h3>Filmler</h3>
-                <% recommendations.movies.forEach(movie => { %>
-                    <div class="item">
-                        <strong><%= movie.title %></strong> (<%= movie.year %>) - <%= movie.director %><br>
-                        <%= movie.description %>
-                    </div>
-                <% }); %>
-            </div>
-            
-            <div class="recommendation-section">
-                <h3>Diziler</h3>
-                <% recommendations.series.forEach(series => { %>
-                    <div class="item">
-                        <strong><%= series.title %></strong> (<%= series.year %>) - <%= series.creator %><br>
-                        <%= series.description %>
-                    </div>
-                <% }); %>
-            </div>
+            <% if (recommendations.books && recommendations.books.length > 0) { %>
+                <div class="recommendation-section">
+                    <h3>📚 Kitaplar</h3>
+                    <% recommendations.books.forEach(book => { %>
+                        <div class="item">
+                            <h3><%= book.title %></h3>
+                            <p><strong>Yazar:</strong> <%= book.author %></p>
+                            <p><%= book.description %></p>
+                        </div>
+                    <% }); %>
+                </div>
+            <% } %>
+
+            <% if (recommendations.movies && recommendations.movies.length > 0) { %>
+                <div class="recommendation-section">
+                    <h3>🎬 Filmler</h3>
+                    <% recommendations.movies.forEach(movie => { %>
+                        <div class="item">
+                            <h3><%= movie.title %> (<%= movie.year %>)</h3>
+                            <p><strong>Yönetmen:</strong> <%= movie.director %></p>
+                            <p><%= movie.description %></p>
+                        </div>
+                    <% }); %>
+                </div>
+            <% } %>
+
         <% } else { %>
             <div class="error">
-                <%= error %>
+                ⚠️ <%= error %>
             </div>
         <% } %>
+    <% } %>
+
+    <% if (!philosophy) { %>
+        <div class="recommendation-section">
+            <h3>🌟 Nasıl Kullanılır?</h3>
+            <div class="item">
+                <p>1. Yukarıdaki arama kutusuna desteklenen felsefi akımlardan birini yazın</p>
+                <p>2. "Önerileri Getir" butonuna tıklayın</p>
+                <p>3. Akımla ilgili kitap ve film önerilerini görüntüleyin</p>
+            </div>
+        </div>
     <% } %>
 </body>
 </html>
